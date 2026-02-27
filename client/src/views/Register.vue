@@ -9,7 +9,7 @@ const authStore = useAuthStore();
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
-const localError = ref('');
+const errors = ref({});
 
 const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -17,25 +17,27 @@ const validateEmail = (email) => {
 };
 
 const handleRegister = async () => {
-  localError.value = '';
+  errors.value = {};
 
   if (!email.value) {
-    localError.value = 'Email is required';
-    return;
+    errors.value.email = 'Email is required';
+  } else if (!validateEmail(email.value)) {
+    errors.value.email = 'Please enter a valid email address';
   }
 
-  if (!validateEmail(email.value)) {
-    localError.value = 'Please enter a valid email address';
-    return;
+  if (!password.value) {
+    errors.value.password = 'Password is required';
+  } else if (password.value.length < 6) {
+    errors.value.password = 'Password must be at least 6 characters';
   }
 
-  if (password.value.length < 6) {
-    localError.value = 'Password must be at least 6 characters';
-    return;
+  if (!confirmPassword.value) {
+    errors.value.confirmPassword = 'Please confirm your password';
+  } else if (password.value !== confirmPassword.value) {
+    errors.value.confirmPassword = 'Passwords do not match';
   }
 
-  if (password.value !== confirmPassword.value) {
-    localError.value = 'Passwords do not match';
+  if (Object.keys(errors.value).length > 0) {
     return;
   }
 
@@ -62,10 +64,13 @@ const handleRegister = async () => {
             id="email"
             v-model="email"
             type="email"
-            required
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            :class="{ 'border-red-500': errors.email, 'border-gray-300': !errors.email }"
             placeholder="you@example.com"
           />
+          <p v-if="errors.email" class="mt-1 text-sm text-red-600">
+            {{ errors.email }}
+          </p>
         </div>
 
         <div>
@@ -76,11 +81,14 @@ const handleRegister = async () => {
             id="password"
             v-model="password"
             type="password"
-            required
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            :class="{ 'border-red-500': errors.password, 'border-gray-300': !errors.password }"
             placeholder="••••••••"
           />
-          <p class="mt-1 text-xs text-gray-500">
+          <p v-if="errors.password" class="mt-1 text-sm text-red-600">
+            {{ errors.password }}
+          </p>
+          <p v-else class="mt-1 text-xs text-gray-500">
             Must be at least 6 characters
           </p>
         </div>
@@ -93,14 +101,17 @@ const handleRegister = async () => {
             id="confirmPassword"
             v-model="confirmPassword"
             type="password"
-            required
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            :class="{ 'border-red-500': errors.confirmPassword, 'border-gray-300': !errors.confirmPassword }"
             placeholder="••••••••"
           />
+          <p v-if="errors.confirmPassword" class="mt-1 text-sm text-red-600">
+            {{ errors.confirmPassword }}
+          </p>
         </div>
 
-        <div v-if="localError || authStore.error" class="text-red-600 text-sm">
-          {{ localError || authStore.error }}
+        <div v-if="authStore.error" class="text-red-600 text-sm">
+          {{ authStore.error }}
         </div>
 
         <button

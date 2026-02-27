@@ -8,7 +8,7 @@ const authStore = useAuthStore();
 
 const email = ref('');
 const password = ref('');
-const localError = ref('');
+const errors = ref({});
 
 const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -16,20 +16,19 @@ const validateEmail = (email) => {
 };
 
 const handleLogin = async () => {
-  localError.value = '';
+  errors.value = {};
 
   if (!email.value) {
-    localError.value = 'Email is required';
-    return;
-  }
-
-  if (!validateEmail(email.value)) {
-    localError.value = 'Please enter a valid email address';
-    return;
+    errors.value.email = 'Email is required';
+  } else if (!validateEmail(email.value)) {
+    errors.value.email = 'Please enter a valid email address';
   }
 
   if (!password.value) {
-    localError.value = 'Password is required';
+    errors.value.password = 'Password is required';
+  }
+
+  if (Object.keys(errors.value).length > 0) {
     return;
   }
 
@@ -56,10 +55,13 @@ const handleLogin = async () => {
             id="email"
             v-model="email"
             type="email"
-            required
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            :class="{ 'border-red-500': errors.email, 'border-gray-300': !errors.email }"
             placeholder="you@example.com"
           />
+          <p v-if="errors.email" class="mt-1 text-sm text-red-600">
+            {{ errors.email }}
+          </p>
         </div>
 
         <div>
@@ -70,14 +72,17 @@ const handleLogin = async () => {
             id="password"
             v-model="password"
             type="password"
-            required
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            :class="{ 'border-red-500': errors.password, 'border-gray-300': !errors.password }"
             placeholder="••••••••"
           />
+          <p v-if="errors.password" class="mt-1 text-sm text-red-600">
+            {{ errors.password }}
+          </p>
         </div>
 
-        <div v-if="localError || authStore.error" class="text-red-600 text-sm">
-          {{ localError || authStore.error }}
+        <div v-if="authStore.error" class="text-red-600 text-sm">
+          {{ authStore.error }}
         </div>
 
         <button
