@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import routes from './routes/index.js';
 import workflowRoutes from './routes/workflows.js';
+import versionRoutes from './routes/versions.js';
 import authRoutes from './routes/auth.js';
 import { connectDatabase } from './config/database.js';
 
@@ -21,6 +22,7 @@ app.use(express.json());
 
 app.use('/api', routes);
 app.use('/api/workflows', workflowRoutes);
+app.use('/api/workflows/:id/versions', versionRoutes);
 app.use('/api/auth', authRoutes);
 
 connectDatabase();
