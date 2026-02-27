@@ -63,9 +63,9 @@ const handleRegister = async () => {
           <input
             id="email"
             v-model="email"
-            type="email"
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-            :class="{ 'border-red-500': errors.email, 'border-gray-300': !errors.email }"
+            type="text"
+            class="w-full px-4 py-2 border rounded-md outline-none"
+            :class="errors.email ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'"
             placeholder="you@example.com"
           />
           <p v-if="errors.email" class="mt-1 text-sm text-red-600">
@@ -81,8 +81,8 @@ const handleRegister = async () => {
             id="password"
             v-model="password"
             type="password"
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-            :class="{ 'border-red-500': errors.password, 'border-gray-300': !errors.password }"
+            class="w-full px-4 py-2 border rounded-md outline-none"
+            :class="errors.password ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'"
             placeholder="••••••••"
           />
           <p v-if="errors.password" class="mt-1 text-sm text-red-600">
@@ -101,8 +101,8 @@ const handleRegister = async () => {
             id="confirmPassword"
             v-model="confirmPassword"
             type="password"
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-            :class="{ 'border-red-500': errors.confirmPassword, 'border-gray-300': !errors.confirmPassword }"
+            class="w-full px-4 py-2 border rounded-md outline-none"
+            :class="errors.confirmPassword ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'"
             placeholder="••••••••"
           />
           <p v-if="errors.confirmPassword" class="mt-1 text-sm text-red-600">
