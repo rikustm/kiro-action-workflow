@@ -11,8 +11,23 @@ const password = ref('');
 const confirmPassword = ref('');
 const localError = ref('');
 
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
 const handleRegister = async () => {
   localError.value = '';
+
+  if (!email.value) {
+    localError.value = 'Email is required';
+    return;
+  }
+
+  if (!validateEmail(email.value)) {
+    localError.value = 'Please enter a valid email address';
+    return;
+  }
 
   if (password.value.length < 6) {
     localError.value = 'Password must be at least 6 characters';

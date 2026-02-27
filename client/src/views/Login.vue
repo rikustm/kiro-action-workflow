@@ -8,8 +8,31 @@ const authStore = useAuthStore();
 
 const email = ref('');
 const password = ref('');
+const localError = ref('');
+
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
 const handleLogin = async () => {
+  localError.value = '';
+
+  if (!email.value) {
+    localError.value = 'Email is required';
+    return;
+  }
+
+  if (!validateEmail(email.value)) {
+    localError.value = 'Please enter a valid email address';
+    return;
+  }
+
+  if (!password.value) {
+    localError.value = 'Password is required';
+    return;
+  }
+
   const success = await authStore.login(email.value, password.value);
   if (success) {
     router.push('/');
@@ -53,8 +76,8 @@ const handleLogin = async () => {
           />
         </div>
 
-        <div v-if="authStore.error" class="text-red-600 text-sm">
-          {{ authStore.error }}
+        <div v-if="localError || authStore.error" class="text-red-600 text-sm">
+          {{ localError || authStore.error }}
         </div>
 
         <button
