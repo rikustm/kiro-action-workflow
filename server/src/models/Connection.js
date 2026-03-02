@@ -4,8 +4,7 @@ const connectionSchema = new mongoose.Schema({
   workflow_version_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'WorkflowVersion',
-    required: [true, 'Workflow version ID is required'],
-    index: true
+    required: [true, 'Workflow version ID is required']
   },
   from_node_id: {
     type: mongoose.Schema.Types.ObjectId,
