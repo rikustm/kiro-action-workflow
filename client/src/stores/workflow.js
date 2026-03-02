@@ -92,3 +92,30 @@ export const useWorkflowStore = defineStore('workflow', {
     }
   }
 });
+
+    async fetchWorkflow(workflowId) {
+      try {
+        const response = await axios.get(`/api/workflows/${workflowId}`);
+        return response.data.data.workflow;
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to fetch workflow');
+      }
+    },
+
+    async updateWorkflow(workflowId, updates) {
+      try {
+        const response = await axios.patch(`/api/workflows/${workflowId}`, updates);
+        return response.data.data.workflow;
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to update workflow');
+      }
+    },
+
+    async fetchVersions(workflowId) {
+      try {
+        const response = await axios.get(`/api/workflows/${workflowId}/versions`);
+        return response.data.data.versions;
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to fetch versions');
+      }
+    }
