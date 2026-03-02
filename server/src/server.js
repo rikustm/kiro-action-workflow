@@ -8,6 +8,7 @@ import workflowRoutes from './routes/workflows.js';
 import taskTypeRoutes from './routes/taskTypes.js';
 import versionRoutes from './routes/versions.js';
 import authRoutes from './routes/auth.js';
+import connectionRoutes from './routes/connections.js';
 import { connectDatabase } from './config/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +26,7 @@ app.use('/api', routes);
 app.use('/api/workflows', workflowRoutes);
 app.use('/api/task-types', taskTypeRoutes);
 app.use('/api/workflows/:id/versions', versionRoutes);
+app.use('/api/workflows/:id/versions/:versionId/connections', connectionRoutes);
 app.use('/api/auth', authRoutes);
 
 connectDatabase();
