@@ -2,11 +2,22 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
+import WorkflowList from '../views/WorkflowList.vue';
 import { useAuthStore } from '../stores/auth';
 
 const routes = [
   {
     path: '/',
+    redirect: '/workflows'
+  },
+  {
+    path: '/workflows',
+    name: 'WorkflowList',
+    component: WorkflowList,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/home',
     name: 'Home',
     component: Home,
     meta: { requiresAuth: true }
@@ -36,7 +47,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login');
   } else if (to.meta.guest && authStore.isAuthenticated) {
-    next('/');
+    next('/workflows');
   } else {
     next();
   }
