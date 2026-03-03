@@ -46,7 +46,7 @@
             <div class="space-y-2 text-sm">
               <div>
                 <span class="text-gray-500">Owner:</span>
-                <span class="ml-2 text-gray-900">{{ workflow?.owner_id?.username || 'Unknown' }}</span>
+                <span class="ml-2 text-gray-900">{{ workflow?.owner || 'Unknown' }}</span>
               </div>
               <div>
                 <span class="text-gray-500">Created:</span>
@@ -167,7 +167,7 @@ const goBack = () => {
 const updateTitle = async () => {
   if (workflowTitle.value !== workflow.value?.title) {
     try {
-      await workflowStore.updateWorkflow(workflow.value._id, { title: workflowTitle.value });
+      await workflowStore.updateWorkflow(workflow.value.id, { title: workflowTitle.value });
       workflow.value.title = workflowTitle.value;
     } catch (err) {
       error.value = 'Failed to update title';
@@ -185,7 +185,7 @@ const clearNodeSelection = () => {
 
 const handleNodeUpdate = async (updates) => {
   try {
-    await nodeStore.updateNode(workflow.value._id, currentVersion.value._id, updates._id, updates);
+    await nodeStore.updateNode(workflow.value.id, currentVersion.value._id, updates._id, updates);
   } catch (err) {
     error.value = 'Failed to update node';
   }
@@ -193,7 +193,7 @@ const handleNodeUpdate = async (updates) => {
 
 const handleNodeDelete = async (nodeId) => {
   try {
-    await nodeStore.deleteNode(workflow.value._id, currentVersion.value._id, nodeId);
+    await nodeStore.deleteNode(workflow.value.id, currentVersion.value._id, nodeId);
   } catch (err) {
     error.value = 'Failed to delete node';
   }
