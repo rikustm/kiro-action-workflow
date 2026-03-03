@@ -17,11 +17,12 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <input
+          <InlineEdit
             v-model="workflowTitle"
-            @blur="updateTitle"
-            class="text-2xl font-semibold border-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2"
+            :on-save="updateTitle"
             placeholder="Workflow Title"
+            text-class="text-2xl font-semibold"
+            input-class="text-2xl font-semibold"
           />
         </div>
         <div class="flex items-center gap-4">
@@ -115,6 +116,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useWorkflowStore } from '../stores/workflow';
+import InlineEdit from '../components/InlineEdit.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -156,14 +158,12 @@ const goBack = () => {
   router.push('/workflows');
 };
 
-const updateTitle = async () => {
-  if (workflowTitle.value !== workflow.value?.title) {
-    try {
-      await workflowStore.updateWorkflow(workflow.value._id, { title: workflowTitle.value });
-      workflow.value.title = workflowTitle.value;
-    } catch (err) {
-      error.value = 'Failed to update title';
-    }
+const updateTitle = async (newTitle) => {
+  try {
+    await workflowStore.updateWorkflow(workflow.value._id, { title: newTitle });
+    workflow.value.title = newTitle;
+  } catch (err) {
+    throw new Error('Failed to update title');
   }
 };
 
