@@ -88,6 +88,15 @@
 
       <!-- Center: Diagram Canvas -->
       <main class="flex-1 bg-gray-100 overflow-hidden">
+              <div class="absolute top-4 left-4 z-10">
+          <AddNodeMenu
+            v-if="workflow && currentVersion"
+            :workflow-id="workflow.id"
+            :version-id="currentVersion.id"
+            :task-types="taskTypes"
+            @node-created="handleNodeCreated"
+          />
+        </div>
         <WorkflowCanvas
           v-if="workflow && currentVersion"
           :workflow-id="workflow.id"
@@ -123,6 +132,7 @@ import { useTaskTypeStore } from '../stores/taskType';
 import NodeEditorPanel from '../components/NodeEditorPanel.vue';
 import InlineEdit from '../components/InlineEdit.vue';
 import WorkflowCanvas from '../components/WorkflowCanvas.vue';
+import AddNodeMenu from '../components/AddNodeMenu.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -212,6 +222,12 @@ const handleNodeSelected = (node) => {
 
 const handleNodeMoved = (node) => {
   console.log('Node moved:', node);
+const handleNodeCreated = async (nodeData) => {
+  try {
+    await nodeStore.createNode(workflow.value.id, currentVersion.value.id, nodeData);
+  } catch (err) {
+    error.value = err.message || 'Failed to create node';
+  }
 };
 
 onMounted(async () => {
