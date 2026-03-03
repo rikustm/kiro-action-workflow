@@ -89,9 +89,7 @@ export const useWorkflowStore = defineStore('workflow', {
     setPage(page) {
       this.pagination.page = page;
       this.fetchWorkflows();
-    }
-  }
-});
+    },
 
     async fetchWorkflow(workflowId) {
       try {
@@ -119,3 +117,5 @@ export const useWorkflowStore = defineStore('workflow', {
         throw new Error(error.response?.data?.message || 'Failed to fetch versions');
       }
     }
+  }
+});
