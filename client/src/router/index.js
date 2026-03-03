@@ -3,6 +3,7 @@ import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
 import WorkflowList from '../views/WorkflowList.vue';
+import WorkflowDetails from '../views/WorkflowDetails.vue';
 import { useAuthStore } from '../stores/auth';
 
 const routes = [
@@ -14,6 +15,12 @@ const routes = [
     path: '/workflows',
     name: 'WorkflowList',
     component: WorkflowList,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/workflows/:id',
+    name: 'WorkflowDetails',
+    component: WorkflowDetails,
     meta: { requiresAuth: true }
   },
   {
