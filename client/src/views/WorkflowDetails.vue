@@ -17,11 +17,12 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <input
+          <InlineEdit
             v-model="workflowTitle"
-            @blur="updateTitle"
-            class="text-2xl font-semibold border-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2"
+            :on-save="updateTitle"
             placeholder="Workflow Title"
+            text-class="text-2xl font-semibold"
+            input-class="text-2xl font-semibold"
           />
         </div>
         <div class="flex items-center gap-4">
@@ -119,6 +120,7 @@ import { useWorkflowStore } from '../stores/workflow';
 import { useNodeStore } from '../stores/node';
 import { useTaskTypeStore } from '../stores/taskType';
 import NodeEditorPanel from '../components/NodeEditorPanel.vue';
+import InlineEdit from '../components/InlineEdit.vue';
 
 const route = useRoute();
 const router = useRouter();
