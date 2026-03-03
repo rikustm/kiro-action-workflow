@@ -38,6 +38,17 @@
 
     <!-- Main Content -->
     <div class="flex flex-1 overflow-hidden">
+      <!-- Left Panel: Workflow Outline -->
+      <aside class="w-64 bg-white border-r border-gray-200 overflow-hidden">
+        <WorkflowOutline
+          v-if="workflow && currentVersion"
+          :workflow-id="workflow.id"
+          :version-id="currentVersion.id"
+          @node-select="handleOutlineNodeSelect"
+          @node-highlight="handleNodeHighlight"
+        />
+      </aside>
+
       <!-- Left Sidebar: Metadata & Version History -->
       <aside class="w-64 bg-gray-50 border-r border-gray-200 overflow-y-auto p-4">
         <div class="space-y-6">
@@ -121,6 +132,7 @@ import { useNodeStore } from '../stores/node';
 import { useTaskTypeStore } from '../stores/taskType';
 import NodeEditorPanel from '../components/NodeEditorPanel.vue';
 import InlineEdit from '../components/InlineEdit.vue';
+import WorkflowOutline from '../components/WorkflowOutline.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -199,6 +211,17 @@ const handleNodeDelete = async (nodeId) => {
   } catch (err) {
     error.value = 'Failed to delete node';
   }
+};
+
+const handleOutlineNodeSelect = (node) => {
+  // Node is already selected in the store by WorkflowOutline
+  // This handler can be used for additional actions like scrolling to node in diagram
+};
+
+const handleNodeHighlight = (nodeId) => {
+  // This will be used to highlight/scroll to the node in the diagram canvas
+  // For now, just a placeholder for future diagram integration
+  console.log('Highlight node in diagram:', nodeId);
 };
 
 onMounted(async () => {
