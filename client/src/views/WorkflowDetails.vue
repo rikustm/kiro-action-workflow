@@ -87,7 +87,18 @@
       </aside>
 
       <!-- Center: Diagram Canvas -->
-      <main class="flex-1 bg-gray-100 overflow-hidden">
+      <main class="flex-1 bg-gray-100 overflow-hidden relative">
+        <!-- Add Node Menu -->
+        <div class="absolute top-4 left-4 z-10">
+          <AddNodeMenu
+            v-if="workflow && currentVersion"
+            :workflow-id="workflow.id"
+            :version-id="currentVersion.id"
+            :task-types="taskTypes"
+            @node-created="handleNodeCreated"
+          />
+        </div>
+
         <div class="h-full flex items-center justify-center text-gray-400">
           <div class="text-center">
             <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,6 +132,7 @@ import { useNodeStore } from '../stores/node';
 import { useTaskTypeStore } from '../stores/taskType';
 import NodeEditorPanel from '../components/NodeEditorPanel.vue';
 import InlineEdit from '../components/InlineEdit.vue';
+import AddNodeMenu from '../components/AddNodeMenu.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -198,6 +210,14 @@ const handleNodeDelete = async (nodeId) => {
     await nodeStore.deleteNode(workflow.value.id, currentVersion.value.id, nodeId);
   } catch (err) {
     error.value = 'Failed to delete node';
+  }
+};
+
+const handleNodeCreated = async (nodeData) => {
+  try {
+    await nodeStore.createNode(workflow.value.id, currentVersion.value.id, nodeData);
+  } catch (err) {
+    error.value = err.message || 'Failed to create node';
   }
 };
 
