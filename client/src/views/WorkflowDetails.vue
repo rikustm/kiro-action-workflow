@@ -99,13 +99,14 @@
       </main>
 
       <!-- Right Panel: Node Editor (contextual) -->
-      <aside class="w-80 bg-white border-l border-gray-200 overflow-y-auto p-4">
-        <div class="text-center text-gray-400 mt-8">
-          <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-          <p class="text-sm">Select a node to edit</p>
-        </div>
+      <aside class="w-80 bg-white border-l border-gray-200 overflow-y-auto">
+        <NodeEditorPanel
+          :node="selectedNode"
+          :task-types="taskTypes"
+          @close="clearNodeSelection"
+          @update="handleNodeUpdate"
+          @delete="handleNodeDelete"
+        />
       </aside>
     </div>
   </div>
@@ -115,10 +116,15 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useWorkflowStore } from '../stores/workflow';
+import { useNodeStore } from '../stores/node';
+import { useTaskTypeStore } from '../stores/taskType';
+import NodeEditorPanel from '../components/NodeEditorPanel.vue';
 
 const route = useRoute();
 const router = useRouter();
 const workflowStore = useWorkflowStore();
+const nodeStore = useNodeStore();
+const taskTypeStore = useTaskTypeStore();
 
 const loading = ref(true);
 const error = ref(null);
@@ -126,6 +132,8 @@ const workflow = ref(null);
 const currentVersion = ref(null);
 const versions = ref([]);
 const workflowTitle = ref('');
+const taskTypes = ref([]);
+const selectedNode = computed(() => nodeStore.selectedNode);
 
 const statusClass = computed(() => {
   const status = currentVersion.value?.status || 'draft';
@@ -171,6 +179,26 @@ const selectVersion = (version) => {
   currentVersion.value = version;
 };
 
+const clearNodeSelection = () => {
+  nodeStore.clearSelection();
+};
+
+const handleNodeUpdate = async (updates) => {
+  try {
+    await nodeStore.updateNode(workflow.value._id, currentVersion.value._id, updates._id, updates);
+  } catch (err) {
+    error.value = 'Failed to update node';
+  }
+};
+
+const handleNodeDelete = async (nodeId) => {
+  try {
+    await nodeStore.deleteNode(workflow.value._id, currentVersion.value._id, nodeId);
+  } catch (err) {
+    error.value = 'Failed to delete node';
+  }
+};
+
 onMounted(async () => {
   try {
     const workflowId = route.params.id;
@@ -187,6 +215,15 @@ onMounted(async () => {
       currentVersion.value = versions.value.find(v => v.version_number === parseInt(route.query.version));
     } else {
       currentVersion.value = versions.value[0]; // Latest version
+    }
+    
+    // Fetch task types
+    await taskTypeStore.fetchTaskTypes();
+    taskTypes.value = taskTypeStore.taskTypes;
+    
+    // Fetch nodes for current version
+    if (currentVersion.value) {
+      await nodeStore.fetchNodes(workflowId, currentVersion.value._id);
     }
     
     loading.value = false;
