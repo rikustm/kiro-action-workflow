@@ -87,9 +87,8 @@
       </aside>
 
       <!-- Center: Diagram Canvas -->
-      <main class="flex-1 bg-gray-100 overflow-hidden relative">
-        <!-- Add Node Menu -->
-        <div class="absolute top-4 left-4 z-10">
+      <main class="flex-1 bg-gray-100 overflow-hidden">
+              <div class="absolute top-4 left-4 z-10">
           <AddNodeMenu
             v-if="workflow && currentVersion"
             :workflow-id="workflow.id"
@@ -98,16 +97,15 @@
             @node-created="handleNodeCreated"
           />
         </div>
-
-        <div class="h-full flex items-center justify-center text-gray-400">
-          <div class="text-center">
-            <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <p>Diagram canvas placeholder</p>
-            <p class="text-sm mt-2">Workflow diagram will be displayed here</p>
-          </div>
-        </div>
+        <WorkflowCanvas
+          v-if="workflow && currentVersion"
+          :workflow-id="workflow.id"
+          :version-id="currentVersion.id"
+          :nodes="nodes"
+          :connections="connections"
+          @node-selected="handleNodeSelected"
+          @node-moved="handleNodeMoved"
+        />
       </main>
 
       <!-- Right Panel: Node Editor (contextual) -->
@@ -129,15 +127,18 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useWorkflowStore } from '../stores/workflow';
 import { useNodeStore } from '../stores/node';
+import { useConnectionStore } from '../stores/connection';
 import { useTaskTypeStore } from '../stores/taskType';
 import NodeEditorPanel from '../components/NodeEditorPanel.vue';
 import InlineEdit from '../components/InlineEdit.vue';
+import WorkflowCanvas from '../components/WorkflowCanvas.vue';
 import AddNodeMenu from '../components/AddNodeMenu.vue';
 
 const route = useRoute();
 const router = useRouter();
 const workflowStore = useWorkflowStore();
 const nodeStore = useNodeStore();
+const connectionStore = useConnectionStore();
 const taskTypeStore = useTaskTypeStore();
 
 const loading = ref(true);
@@ -147,6 +148,8 @@ const currentVersion = ref(null);
 const versions = ref([]);
 const workflowTitle = ref('');
 const taskTypes = ref([]);
+const nodes = computed(() => nodeStore.nodes);
+const connections = computed(() => connectionStore.connections);
 const selectedNode = computed(() => nodeStore.selectedNode);
 
 const statusClass = computed(() => {
@@ -213,6 +216,14 @@ const handleNodeDelete = async (nodeId) => {
   }
 };
 
+const handleNodeSelected = (node) => {
+  nodeStore.selectNode(node);
+};
+
+const handleNodeMoved = (node) => {
+  console.log('Node moved:', node);
+};
+
 const handleNodeCreated = async (nodeData) => {
   try {
     await nodeStore.createNode(workflow.value.id, currentVersion.value.id, nodeData);
@@ -246,6 +257,7 @@ onMounted(async () => {
     // Fetch nodes for current version
     if (currentVersion.value) {
       await nodeStore.fetchNodes(workflowId, currentVersion.value.id);
+      await connectionStore.fetchConnections(workflowId, currentVersion.value.id);
     }
     
     loading.value = false;
