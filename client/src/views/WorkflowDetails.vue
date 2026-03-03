@@ -222,6 +222,8 @@ const handleNodeSelected = (node) => {
 
 const handleNodeMoved = (node) => {
   console.log('Node moved:', node);
+};
+
 const handleNodeCreated = async (nodeData) => {
   try {
     await nodeStore.createNode(workflow.value.id, currentVersion.value.id, nodeData);
