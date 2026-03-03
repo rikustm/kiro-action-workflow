@@ -209,11 +209,13 @@ const handleCanvasMouseMove = (event) => {
     panX.value = event.clientX - panStart.value.x;
     panY.value = event.clientY - panStart.value.y;
   } else if (isDraggingNode.value && draggedNode.value) {
-    const newX = (event.clientX - panX.value) / zoom.value - dragOffset.value.x;
-    const newY = (event.clientY - panY.value) / zoom.value - dragOffset.value.y;
+    // Calculate new position in canvas space
+    const canvasX = (event.clientX - panX.value) / zoom.value;
+    const canvasY = (event.clientY - panY.value) / zoom.value;
     
-    draggedNode.value.position_x = Math.max(0, newX);
-    draggedNode.value.position_y = Math.max(0, newY);
+    // Apply offset and allow negative positions (nodes can be anywhere on canvas)
+    draggedNode.value.position_x = canvasX - dragOffset.value.x;
+    draggedNode.value.position_y = canvasY - dragOffset.value.y;
   } else if (connectionStore.isCreating) {
     // Update temp connection position
     connectionStore.updateTempConnection({
@@ -286,13 +288,17 @@ const getNodeAtPosition = (clientX, clientY) => {
 };
 
 const handleNodeMouseDown = (node, event) => {
+  event.stopPropagation(); // Prevent canvas panning
   isDraggingNode.value = true;
   draggedNode.value = node;
   
-  const rect = event.currentTarget.getBoundingClientRect();
+  // Calculate offset from mouse to node's top-left corner in canvas space
+  const canvasX = (event.clientX - panX.value) / zoom.value;
+  const canvasY = (event.clientY - panY.value) / zoom.value;
+  
   dragOffset.value = {
-    x: (event.clientX - rect.left) / zoom.value,
-    y: (event.clientY - rect.top) / zoom.value
+    x: canvasX - node.position_x,
+    y: canvasY - node.position_y
   };
 };
 
