@@ -68,12 +68,12 @@
                 :key="version._id"
                 @click="selectVersion(version)"
                 class="p-2 rounded cursor-pointer hover:bg-gray-100"
-                :class="{ 'bg-blue-50 border border-blue-200': version._id === currentVersion?._id }"
+                :class="{ 'bg-blue-50 border border-blue-200': version.id === currentVersion?.id }"
               >
                 <div class="flex items-center justify-between">
                   <span class="text-sm font-medium">v{{ version.version_number }}</span>
-                  <span class="text-xs px-2 py-0.5 rounded" :class="getVersionStatusClass(version.status)">
-                    {{ version.status }}
+                  <span class="text-xs px-2 py-0.5 rounded" :class="getVersionStatusClass(version.is_published)">
+                    {{ version.is_published ? 'Published' : 'Draft' }}
                   </span>
                 </div>
                 <div class="text-xs text-gray-500 mt-1">
@@ -144,10 +144,10 @@ const statusClass = computed(() => {
   };
 });
 
-const getVersionStatusClass = (status) => {
+const getVersionStatusClass = (isPublished) => {
   return {
-    'bg-yellow-100 text-yellow-700': status === 'draft',
-    'bg-green-100 text-green-700': status === 'published'
+    'bg-yellow-100 text-yellow-700': !isPublished,
+    'bg-green-100 text-green-700': isPublished
   };
 };
 
@@ -185,7 +185,7 @@ const clearNodeSelection = () => {
 
 const handleNodeUpdate = async (updates) => {
   try {
-    await nodeStore.updateNode(workflow.value.id, currentVersion.value._id, updates._id, updates);
+    await nodeStore.updateNode(workflow.value.id, currentVersion.value.id, updates._id, updates);
   } catch (err) {
     error.value = 'Failed to update node';
   }
@@ -193,7 +193,7 @@ const handleNodeUpdate = async (updates) => {
 
 const handleNodeDelete = async (nodeId) => {
   try {
-    await nodeStore.deleteNode(workflow.value.id, currentVersion.value._id, nodeId);
+    await nodeStore.deleteNode(workflow.value.id, currentVersion.value.id, nodeId);
   } catch (err) {
     error.value = 'Failed to delete node';
   }
@@ -223,7 +223,7 @@ onMounted(async () => {
     
     // Fetch nodes for current version
     if (currentVersion.value) {
-      await nodeStore.fetchNodes(workflowId, currentVersion.value._id);
+      await nodeStore.fetchNodes(workflowId, currentVersion.value.id);
     }
     
     loading.value = false;
