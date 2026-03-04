@@ -23,6 +23,10 @@ const handleLogout = () => {
   router.push('/login');
 };
 
+const goToTaskTypes = () => {
+  router.push('/admin/task-types');
+};
+
 const openCreateModal = () => {
   showCreateModal.value = true;
   newWorkflowTitle.value = '';
@@ -80,12 +84,21 @@ const handleArchive = async (workflowId) => {
     <nav class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         <h1 class="text-xl font-bold text-gray-800">Workflow Documentation</h1>
-        <button
-          @click="handleLogout"
-          class="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md"
-        >
-          Logout
-        </button>
+        <div class="flex items-center gap-3">
+          <button
+            v-if="authStore.isAdmin"
+            @click="goToTaskTypes"
+            class="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+          >
+            Task Types
+          </button>
+          <button
+            @click="handleLogout"
+            class="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </nav>
 

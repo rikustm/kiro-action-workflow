@@ -4,6 +4,7 @@ import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
 import WorkflowList from '../views/WorkflowList.vue';
 import WorkflowDetails from '../views/WorkflowDetails.vue';
+import TaskTypeManagement from '../views/TaskTypeManagement.vue';
 import { useAuthStore } from '../stores/auth';
 
 const routes = [
@@ -22,6 +23,12 @@ const routes = [
     name: 'WorkflowDetails',
     component: WorkflowDetails,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/task-types',
+    name: 'TaskTypeManagement',
+    component: TaskTypeManagement,
+    meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/home',
@@ -53,6 +60,8 @@ router.beforeEach((to, from, next) => {
   
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login');
+  } else if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    next('/workflows');
   } else if (to.meta.guest && authStore.isAuthenticated) {
     next('/workflows');
   } else {
